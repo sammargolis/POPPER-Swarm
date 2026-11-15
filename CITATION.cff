@@ -1,20 +1,28 @@
 cff-version: 1.2.0
-message: "If you find POPPER or POPPER-Swarm useful in your research, please cite:"
-title: "POPPER: Automated Hypothesis Validation with Agentic Sequential Falsifications"
+message: "If you use POPPER-Swarm, please cite this repository and the foundational POPPER paper:"
+title: "POPPER-Swarm: Multi-Agent Computational Biology Reproduction with Sequential Falsification"
 authors:
-  - family-names: "Huang"
-    given-names: "Kexin"
-  - family-names: "Jin"
-    given-names: "Ying"
-  - family-names: "Li"
-    given-names: "Ryan"
-  - family-names: "Li"
-    given-names: "Michael Y."
-  - family-names: "Candès"
-    given-names: "Emmanuel"
-  - family-names: "Leskovec"
-    given-names: "Jure"
-year: 2025
-url: "https://arxiv.org/abs/2502.09858"
-repository-code: "https://github.com/snap-stanford/POPPER"
+  - family-names: "Margolis"
+    given-names: "Sam"
+year: 2026
+url: "https://github.com/sammargolis/POPPER-Swarm"
+repository-code: "https://github.com/sammargolis/POPPER-Swarm"
 license: MIT
+references:
+  - type: article
+    title: "Automated Hypothesis Validation with Agentic Sequential Falsifications"
+    authors:
+      - family-names: "Huang"
+        given-names: "Kexin"
+      - family-names: "Jin"
+        given-names: "Ying"
+      - family-names: "Li"
+        given-names: "Ryan"
+      - family-names: "Li"
+        given-names: "Michael Y."
+      - family-names: "Candès"
+        given-names: "Emmanuel"
+      - family-names: "Leskovec"
+        given-names: "Jure"
+    year: 2025
+    url: "https://arxiv.org/abs/2502.09858"

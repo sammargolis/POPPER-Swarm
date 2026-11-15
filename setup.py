@@ -18,14 +18,14 @@ with open(path.join(this_directory, "requirements.txt"), encoding="utf-8") as f:
     requirements = [line.strip() for line in f.read().splitlines() if line.strip() and not line.startswith("#")]
 
 setup(
-    name="popper_agent",
+    name="popper_swarm",
     version=__version__,
     license="MIT",
-    description="POPPER-Swarm: Automated Hypothesis Validation & Computational Biology Reproduction with Agentic Sequential Falsifications",
+    description="POPPER-Swarm: Multi-Agent Computational Biology Reproduction with Sequential Falsification",
     long_description=readme(),
     long_description_content_type="text/markdown",
-    url="https://github.com/snap-stanford/POPPER",
-    author="POPPER-Swarm Team (extending Huang, Jin, Li, Li, Candes & Leskovec, 2025)",
+    url="https://github.com/sammargolis/POPPER-Swarm",
+    author="Sam Margolis",
     packages=find_packages(where=".") + find_packages(where="src"),
     package_dir={"": ".", "popper_swarm": "src/popper_swarm"},
     zip_safe=False,
