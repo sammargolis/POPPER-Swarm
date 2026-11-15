@@ -150,6 +150,7 @@ print(results)
 │   ├── benchmark_comparison.json   # Official BixBench3 grades & GPT-5.5 PhDval-1 5-way ablation scores
 │   ├── POPPER_Swarm_3Slide_Pitch.pdf
 │   └── POPPER_Swarm_BixBench3_Presentation.pdf
+├── docs/                           # Architecture plan (PLAN.md) and contributor guide (CONTRIBUTING.md)
 ├── figs/                           # Architecture & benchmark figures
 ├── tests/                          # 147 pytest unit and integration checks
 └── demo.ipynb                      # Interactive Jupyter notebook walkthrough
