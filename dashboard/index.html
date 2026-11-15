@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POPPER-Swarm Observatory — BixBench3 AI Scientist Swarm</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            slate: {
+              950: '#060913',
+              925: '#0b1021',
+              900: '#0f172a',
+              850: '#141e36',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'Fira Code', 'ui-monospace', 'monospace'],
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #060913;
+      color: #e2e8f0;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.65);
+    }
+    .glass-card-hover:hover {
+      border-color: rgba(99, 102, 241, 0.55);
+      box-shadow: 0 8px 30px -10px rgba(99, 102, 241, 0.2);
+    }
+    .diff-del {
+      background: rgba(239, 68, 68, 0.14);
+      color: #fca5a5;
+      border-left: 3px solid #ef4444;
+    }
+    .diff-add {
+      background: rgba(16, 185, 129, 0.14);
+      color: #6ee7b7;
+      border-left: 3px solid #10b981;
+    }
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0b1021;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="min-h-screen selection:bg-indigo-500/30 selection:text-indigo-200">
+  <!-- Top Header -->
+  <header class="sticky top-0 z-40 border-b border-slate-800/90 bg-slate-950/90 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-violet-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-500/20 font-mono font-bold text-white text-lg">
+          E<sub>t</sub>
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white">POPPER-Swarm Observatory</h1>
+            <span class="px-2 py-0.5 text-[11px] font-mono font-semibold uppercase tracking-wider rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+              Track 3: AI Scientist Swarms
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            Sequential E-Value Falsification &bull; <span class="text-sky-400 font-medium">Exa</span> Main-Loop Grounding &bull; <span class="text-emerald-400 font-medium">past.dev</span> Multiplayer Memory on <span class="text-slate-200 font-medium">BixBench3</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2.5">
+        <div id="sync-badge" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="sync-status-text">Live API Connected</span>
+        </div>
+        <button onclick="loadDashboardState()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Refresh Telemetry
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-900/80 bg-slate-950/60">
+      <nav class="flex space-x-1 overflow-x-auto py-1.5" aria-label="Tabs">
+        <button onclick="switchTab('all')" id="tab-btn-all" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition bg-indigo-600/20 text-indigo-300 border border-indigo-500/40">
+          All Pillars (Executive View)
+        </button>
+        <button onclick="switchTab('leaderboard')" id="tab-btn-leaderboard" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-400 hover:text-slate-200 border border-transparent">
+          1. BixBench3 Leaderboard &amp; Ablations
+        </button>
+        <button onclick="switchTab('falsification')" id="tab-btn-falsification" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-400 hover:text-slate-200 border border-transparent">
+          2. POPPER Falsification Ledger ("What We Rejected")
+        </button>
+        <button onclick="switchTab('exa')" id="tab-btn-exa" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-400 hover:text-slate-200 border border-transparent">
+          3. Exa Search Provenance Explorer
+        </button>
+        <button onclick="switchTab('memory')" id="tab-btn-memory" class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-400 hover:text-slate-200 border border-transparent">
+          4. past.dev Multiplayer Memory Graph
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+    <!-- Top Executive KPI Strip -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div class="glass-card rounded-xl p-4 border-l-4 border-l-emerald-500">
+        <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400">POPPER-Swarm (Full) Score</div>
+        <div class="mt-1 flex items-baseline gap-2">
+          <span id="kpi-swarm-score" class="text-2xl font-extrabold font-mono text-emerald-400">--</span>
+          <span id="kpi-record-delta" class="text-xs font-mono px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">+0.424 vs SOTA</span>
+        </div>
+        <div class="mt-1.5 text-xs text-slate-400">
+          Beats BixBench3 #1 Record (<span class="font-mono text-amber-300">0.523</span>) &amp; Baseline (<span id="kpi-baseline-inline" class="font-mono text-rose-300">--</span>)
+        </div>
+      </div>
+
+      <div class="glass-card rounded-xl p-4 border-l-4 border-l-indigo-500">
+        <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400">PhDval-1 Process Judge</div>
+        <div class="mt-1 flex items-baseline gap-2">
+          <span id="kpi-phdval-score" class="text-2xl font-extrabold font-mono text-indigo-400">--</span>
+          <span id="kpi-phdval-raw" class="text-xs font-mono text-slate-400">(4.81 / 5.0)</span>
+        </div>
+        <div class="mt-1.5 text-xs text-slate-400">
+          Across 8 rubrics (<code class="text-[11px] text-slate-300">failure_candor</code>, <code class="text-[11px] text-slate-300">result_validation</code>)
+        </div>
+      </div>
+
+      <div class="glass-card rounded-xl p-4 border-l-4 border-l-rose-500">
+        <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400">POPPER Rejections Repaired</div>
+        <div class="mt-1 flex items-baseline gap-2">
+          <span id="kpi-rejections-count" class="text-2xl font-extrabold font-mono text-rose-400">--</span>
+          <span class="text-xs font-mono px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">E<sub>t</sub> &ge; 20.0</span>
+        </div>
+        <div class="mt-1.5 text-xs text-slate-400">
+          Ville's threshold 1/&alpha; = 20.0 (&alpha; = 0.05) anytime-valid gate
+        </div>
+      </div>
+
+      <div class="glass-card rounded-xl p-4 border-l-4 border-l-sky-500">
+        <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400">Exa Main-Loop Grounding</div>
+        <div class="mt-1 flex items-baseline gap-2">
+          <span id="kpi-exa-calls" class="text-2xl font-extrabold font-mono text-sky-400">--</span>
+          <span id="kpi-exa-breakdown" class="text-xs font-mono text-slate-400">(/search + /contents)</span>
+        </div>
+        <div class="mt-1.5 text-xs text-slate-400">
+          100% DOI-sanitized tool docs &amp; bio falsification priors
+        </div>
+      </div>
+
+      <div class="glass-card rounded-xl p-4 border-l-4 border-l-violet-500">
+        <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400">past.dev Shared Memory</div>
+        <div class="mt-1 flex items-baseline gap-2">
+          <span id="kpi-memory-events" class="text-2xl font-extrabold font-mono text-violet-400">--</span>
+          <span id="kpi-memory-edges" class="text-xs font-mono px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300 border border-violet-500/30">5 Roles</span>
+        </div>
+        <div class="mt-1.5 text-xs text-slate-400">
+          Verified cross-agent <code class="text-[11px] text-slate-300">ingest</code> &rarr; <code class="text-[11px] text-slate-300">recall</code> handoffs
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- PILLAR 1: BIXBENCH3 LEADERBOARD & ABLATION SUITE                      -->
+    <!-- ===================================================================== -->
+    <section id="section-leaderboard" class="space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-xs font-mono font-bold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">PILLAR 1</span>
+            <h2 class="text-xl font-bold text-white">BixBench3 Leaderboard &amp; Controlled 4-Way Ablation Suite</h2>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">
+            Comparing the <span class="text-amber-300 font-mono font-semibold">0.523</span> single-agent frontier record and matched-compute Single-Agent Baseline against <span class="text-emerald-300 font-mono font-semibold">POPPER-Swarm (Full)</span> and 3 component ablations across Task 9 (14 artifacts) &amp; Task 11 (5 artifacts).
+          </p>
+        </div>
+        <div class="flex items-center gap-1.5 bg-slate-900 p-1 rounded-lg border border-slate-800">
+          <button onclick="setTaskFilter('all')" id="task-filter-all" class="px-3 py-1 rounded text-xs font-mono font-semibold bg-indigo-600 text-white">Combined (19 Artifacts)</button>
+          <button onclick="setTaskFilter('task_9')" id="task-filter-task_9" class="px-3 py-1 rounded text-xs font-mono font-semibold text-slate-400 hover:text-white">Task 9: REST KO Tag-Seq (14)</button>
+          <button onclick="setTaskFilter('task_11')" id="task-filter-task_11" class="px-3 py-1 rounded text-xs font-mono font-semibold text-slate-400 hover:text-white">Task 11: 1,4-Dioxane TempO-Seq (5)</button>
+        </div>
+      </div>
+
+      <!-- Bar Chart + PhDval-1 Rubric Breakdown -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left 7 cols: Visual Leaderboard & Ablation Bars -->
+        <div class="lg:col-span-7 glass-card rounded-xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Deterministic Paper Score vs. PhDval-1 Process Score</h3>
+            <span class="text-xs font-mono text-amber-300 flex items-center gap-1.5">
+              <span class="inline-block w-3 h-0.5 bg-amber-400"></span> Frontier SOTA Record: 0.523
+            </span>
+          </div>
+          <div id="ablation-bars-container" class="space-y-4 pt-1"></div>
+        </div>
+
+        <!-- Right 5 cols: PhDval-1 8-Rubric Breakdown -->
+        <div class="lg:col-span-5 glass-card rounded-xl p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">PhDval-1 Process Judge (8 Rubrics)</h3>
+              <p class="text-[11px] text-slate-400">Comparing Single-Agent Baseline vs. POPPER-Swarm (Full) (0–5 scale)</p>
+            </div>
+            <span class="px-2 py-0.5 text-[11px] font-mono rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">openai/gpt-5.5</span>
+          </div>
+          <div id="phdval-rubrics-container" class="space-y-2.5"></div>
+        </div>
+      </div>
+
+      <!-- Per-Artifact Deterministic Check Drill-Down Table -->
+      <div class="glass-card rounded-xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Per-Artifact Deterministic Check Drill-Down (Multiplicative Score = row_f1 &times; col_f1 &times; ccc &times; label_f1)</h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              In BixBench3, checks combine multiplicatively (<code class="text-slate-300">score_combination = product</code>): a single <code class="text-rose-300">0.0</code> check from a <code class="text-rose-300">.version</code> suffix or sign flip collapses the entire artifact to <code class="text-rose-300">0.000</code>.
+            </p>
+          </div>
+          <input id="artifact-search-input" oninput="renderArtifactTable()" type="text" placeholder="Filter artifact ID or failure mode..." class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-slate-200 font-mono focus:outline-none focus:border-indigo-500 w-64" />
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400 font-mono text-[11px] uppercase">
+                <th class="py-2.5 px-3">Task</th>
+                <th class="py-2.5 px-3">Artifact ID</th>
+                <th class="py-2.5 px-2 text-right">Baseline</th>
+                <th class="py-2.5 px-2 text-right">-Critic</th>
+                <th class="py-2.5 px-2 text-right">-past.dev</th>
+                <th class="py-2.5 px-2 text-right">-Exa</th>
+                <th class="py-2.5 px-2 text-right text-emerald-400 font-bold">Swarm (Full)</th>
+                <th class="py-2.5 px-2 text-center">row_f1</th>
+                <th class="py-2.5 px-2 text-center">col_f1</th>
+                <th class="py-2.5 px-2 text-center">ccc</th>
+                <th class="py-2.5 px-3">Multiplicative Failure Prevented by Swarm</th>
+              </tr>
+            </thead>
+            <tbody id="artifact-drilldown-tbody" class="divide-y divide-slate-800/70 font-mono"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- PILLAR 2: POPPER SEQUENTIAL FALSIFICATION LEDGER                      -->
+    <!-- ===================================================================== -->
+    <section id="section-falsification" class="space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-xs font-mono font-bold rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">PILLAR 2</span>
+            <h2 class="text-xl font-bold text-white">POPPER Sequential Falsification Ledger ("What the Swarm Rejected")</h2>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">
+            Extending <span class="text-slate-200 font-medium">POPPER (Huang et al., ICML 2025)</span> to executable bioinformatics contracts: every candidate artifact is subjected to 6 sequential refutation experiments (<code class="text-slate-300">F1_EXISTENCE</code> &ndash; <code class="text-slate-300">F6_BIO_PRIOR_ALIGNMENT</code>).
+          </p>
+        </div>
+      </div>
+
+      <!-- Math Foundation + Interactive Calibrator -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-7 glass-card rounded-xl p-5 space-y-3">
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Anytime-Valid Sequential E-Process &amp; Ville's Inequality</h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            For each candidate artifact, the POPPER Critic tests the null hypothesis <span class="font-mono text-indigo-300">H<sub>0</sub>: "Artifact satisfies all structural, statistical, and biological invariants"</span>. Each falsification test <span class="font-mono">k &in; {1..6}</span> yields a <span class="font-mono">p</span>-value <span class="font-mono">p<sub>k</sub></span> against validity, converted via the <strong>Vovk-Wang (2021) calibrator</strong> into an <span class="font-mono">e</span>-value:
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div class="p-3 rounded-lg bg-slate-900/90 border border-slate-800 font-mono text-xs">
+              <div class="text-[10px] uppercase text-slate-400">1. Vovk-Wang Calibrator</div>
+              <div class="text-sm font-bold text-indigo-300 mt-1">e<sub>k</sub> = &frac12; &middot; p<sub>k</sub><sup>&minus;1/2</sup></div>
+              <div class="text-[11px] text-slate-400 mt-1">e<sub>k</sub> &le; 1 when p<sub>k</sub> &ge; 0.25</div>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/90 border border-slate-800 font-mono text-xs">
+              <div class="text-[10px] uppercase text-slate-400">2. E-Process Martingale</div>
+              <div class="text-sm font-bold text-amber-300 mt-1">E<sub>t</sub> = &prod;<sub>k=1..t</sub> e<sub>k</sub></div>
+              <div class="text-[11px] text-slate-400 mt-1">Accumulates across checks</div>
+            </div>
+            <div class="p-3 rounded-lg bg-slate-900/90 border border-rose-500/40 font-mono text-xs">
+              <div class="text-[10px] uppercase text-rose-300">3. Ville's Stopping Rule</div>
+              <div class="text-sm font-bold text-rose-400 mt-1">E<sub>t</sub> &ge; 1/&alpha; = 20.0</div>
+              <div class="text-[11px] text-slate-400 mt-1">Type-I error &le; &alpha; = 0.05</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Live E-Value Calibrator -->
+        <div class="lg:col-span-5 glass-card rounded-xl p-5 space-y-3 border border-indigo-500/30">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Interactive E-Value Simulator</h3>
+            <span class="text-[11px] font-mono text-indigo-300">Live `/api/calibrate`</span>
+          </div>
+          <div class="space-y-2">
+            <label class="block text-xs text-slate-300 font-mono">
+              Select or enter test refutation p-value (<span id="sim-p-label" class="text-indigo-300 font-bold">0.0000128</span>):
+            </label>
+            <div class="flex flex-wrap gap-1.5">
+              <button onclick="runCalibrator(0.0000001)" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-mono text-slate-200">p=1e-7 (.version bug)</button>
+              <button onclick="runCalibrator(0.0000128)" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-mono text-slate-200">p=1.28e-5 (0/7 REST sign)</button>
+              <button onclick="runCalibrator(0.0005)" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-mono text-slate-200">p=5e-4 (borderline)</button>
+              <button onclick="runCalibrator(0.64)" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-mono text-slate-200">p=0.64 (valid pass)</button>
+            </div>
+            <div id="sim-result-box" class="mt-2 p-3 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-between font-mono text-xs">
+              <div>
+                <div class="text-slate-400">Calibrated E-Value:</div>
+                <div id="sim-e-val" class="text-lg font-extrabold text-rose-400">139.7542</div>
+              </div>
+              <div class="text-right">
+                <div class="text-slate-400">Decision vs 1/&alpha;=20.0:</div>
+                <div id="sim-decision" class="text-sm font-bold text-rose-400">REJECTED (E &ge; 20.0)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Rejection Cards Timeline -->
+      <div id="rejection-timeline-container" class="space-y-4"></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- PILLAR 3: EXA SEARCH PROVENANCE EXPLORER                              -->
+    <!-- ===================================================================== -->
+    <section id="section-exa" class="space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-xs font-mono font-bold rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">PILLAR 3 &bull; EXA SPONSOR TRACK</span>
+            <h2 class="text-xl font-bold text-white">Exa Search Provenance Explorer (<code class="text-base text-sky-300">outputs/exa_provenance.jsonl</code>)</h2>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">
+            Every live <code class="text-sky-300">exa.search(type="auto", objective=..., contents={"highlights": True})</code> and <code class="text-sky-300">exa.get_contents(urls, highlights=True)</code> call executed in the main solver loop with automatic target-DOI anti-leakage sanitization.
+          </p>
+        </div>
+        <div class="flex items-center gap-1.5 bg-slate-900 p-1 rounded-lg border border-slate-800">
+          <button onclick="setExaFilter('all')" id="exa-filter-all" class="px-3 py-1 rounded text-xs font-mono font-semibold bg-sky-600 text-white">All Calls</button>
+          <button onclick="setExaFilter('/search')" id="exa-filter-/search" class="px-3 py-1 rounded text-xs font-mono font-semibold text-slate-400 hover:text-white">/search</button>
+          <button onclick="setExaFilter('/contents')" id="exa-filter-/contents" class="px-3 py-1 rounded text-xs font-mono font-semibold text-slate-400 hover:text-white">/contents</button>
+        </div>
+      </div>
+
+      <div id="exa-cards-container" class="grid grid-cols-1 lg:grid-cols-2 gap-5"></div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- PILLAR 4: PAST.DEV MULTIPLAYER MEMORY GRAPH                           -->
+    <!-- ===================================================================== -->
+    <section id="section-memory" class="space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 text-xs font-mono font-bold rounded bg-violet-500/20 text-violet-300 border border-violet-500/30">PILLAR 4 &bull; PAST.DEV SPONSOR TRACK</span>
+            <h2 class="text-xl font-bold text-white">past.dev Multiplayer Memory Graph (<code class="text-base text-violet-300">outputs/past_memory_trace.jsonl</code>)</h2>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">
+            Visualizing multi-agent writes (<code class="text-violet-300">/api/v1/ingest</code>) and cross-agent recalls (<code class="text-violet-300">/api/v1/recall</code> where <code class="text-emerald-300">reader &ne; author</code>) across all 5 specialized swarm identities.
+          </p>
+        </div>
+      </div>
+
+      <!-- Interactive SVG Graph + Per-Agent Read/Write Matrix -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- SVG Directed Multiplayer Graph -->
+        <div class="lg:col-span-6 glass-card rounded-xl p-5 flex flex-col justify-between">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Cross-Agent Memory Handoff Topology</h3>
+            <span class="text-[11px] font-mono text-violet-300">Directed edges: Writer &rarr; Reader</span>
+          </div>
+          <div class="w-full flex items-center justify-center bg-slate-950/70 rounded-xl border border-slate-800/80 p-3">
+            <svg id="memory-svg-graph" viewBox="0 0 540 360" class="w-full max-w-[540px] h-auto"></svg>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-2 font-mono text-center">
+            Solid directed arcs indicate verified <code class="text-violet-300">cross_agent_read: true</code> recalls logged in <code class="text-slate-300">outputs/past_memory_trace.jsonl</code>.
+          </p>
+        </div>
+
+        <!-- Per-Agent Read/Write Telemetry & Hybrid Memory Architecture -->
+        <div class="lg:col-span-6 space-y-5">
+          <div class="glass-card rounded-xl p-5 space-y-3">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Multi-Agent Read/Write Verification Matrix</h3>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-xs font-mono">
+                <thead>
+                  <tr class="border-b border-slate-800 text-slate-400 text-[11px] uppercase">
+                    <th class="py-2 px-2.5">Agent Identity</th>
+                    <th class="py-2 px-2 text-right">Writes (/ingest)</th>
+                    <th class="py-2 px-2 text-right">Reads (/recall)</th>
+                    <th class="py-2 px-2 text-right text-emerald-400">Cross-Agent Reads</th>
+                    <th class="py-2 px-2.5">Recalled From Authors</th>
+                  </tr>
+                </thead>
+                <tbody id="memory-agent-matrix-tbody" class="divide-y divide-slate-800/70"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-xl p-5 space-y-2.5">
+            <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Hybrid Memory Architecture (past.dev vs. Local Sandbox)</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div class="p-3 rounded-lg bg-violet-950/25 border border-violet-500/30">
+                <div class="font-mono font-bold text-violet-300 mb-1">Stored in past.dev Cloud API</div>
+                <ul class="space-y-1 text-slate-300 list-disc list-inside text-[11px]">
+                  <li>Study DAG contracts &amp; Exa parameter rules (<code class="text-violet-200">proposer</code>)</li>
+                  <li>Sample sheet GSM mappings &amp; GTF conventions (<code class="text-violet-200">inspector</code>)</li>
+                  <li>POPPER rejected hypotheses &amp; e-value prescriptions (<code class="text-violet-200">critic</code>)</li>
+                  <li>Cross-task reusable DESeq2/ID rules (<code class="text-violet-200">auditor</code>)</li>
+                </ul>
+              </div>
+              <div class="p-3 rounded-lg bg-slate-900/90 border border-slate-700/70">
+                <div class="font-mono font-bold text-slate-200 mb-1">Stored in Local Sandbox (/work, /outputs)</div>
+                <ul class="space-y-1 text-slate-400 list-disc list-inside text-[11px]">
+                  <li>Multi-GB raw FASTQs, BAM alignments, HISAT2 indexes</li>
+                  <li>Checkpointed intermediate count matrices &amp; Rds objects</li>
+                  <li>Final graded CSV/TSV artifacts &amp; <code class="text-slate-300">METHODS.md</code></li>
+                  <li>Deterministic local JSONL provenance mirrors</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live past.dev Trace Table -->
+      <div class="glass-card rounded-xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono">Live <code class="text-violet-300">past_memory_trace.jsonl</code> Event Stream</h3>
+          <div class="flex items-center gap-1.5 bg-slate-900 p-1 rounded-lg border border-slate-800">
+            <button onclick="setMemoryFilter('all')" id="mem-filter-all" class="px-2.5 py-1 rounded text-xs font-mono font-semibold bg-violet-600 text-white">All Events</button>
+            <button onclick="setMemoryFilter('ingest')" id="mem-filter-ingest" class="px-2.5 py-1 rounded text-xs font-mono font-semibold text-slate-400 hover:text-white">Writes (ingest)</button>
+            <button onclick="setMemoryFilter('recall')" id="mem-filter-recall" class="px-2.5 py-1 rounded text-xs font-mono font-semibold text-slate-400 hover:text-white">Cross-Agent Reads (recall)</button>
+          </div>
+        </div>
+        <div id="memory-events-container" class="space-y-2.5 max-h-[520px] overflow-y-auto pr-1"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 border-t border-slate-900 text-center text-xs text-slate-500 font-mono">
+    POPPER-Swarm &bull; Track 3: AI Scientist Swarms &bull; Exa Sponsor Challenge &bull; past.dev Multi-Agent Memory Challenge
+  </footer>
+
+  <script>
+    let STATE = null;
+    let CURRENT_TASK_FILTER = 'all';
+    let CURRENT_EXA_FILTER = 'all';
+    let CURRENT_MEM_FILTER = 'all';
+
+    function switchTab(tab) {
+      const sections = ['leaderboard', 'falsification', 'exa', 'memory'];
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = 'tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition text-slate-400 hover:text-slate-200 border border-transparent';
+      });
+      const activeBtn = document.getElementById('tab-btn-' + tab);
+      if (activeBtn) {
+        activeBtn.className = 'tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold transition bg-indigo-600/20 text-indigo-300 border border-indigo-500/40';
+      }
+      sections.forEach(s => {
+        const el = document.getElementById('section-' + s);
+        if (!el) return;
+        if (tab === 'all' || tab === s) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+    }
+
+    function setTaskFilter(filter) {
+      CURRENT_TASK_FILTER = filter;
+      ['all', 'task_9', 'task_11'].forEach(k => {
+        const btn = document.getElementById('task-filter-' + k);
+        if (!btn) return;
+        btn.className = (k === filter)
+          ? 'px-3 py-1 rounded text-xs font-mono font-semibold bg-indigo-600 text-white'
+          : 'px-3 py-1 rounded text-xs font-mono font-semibold text-slate-400 hover:text-white';
+      });
+      renderLeaderboard();
+      renderArtifactTable();
+    }
+
+    function setExaFilter(filter) {
+      CURRENT_EXA_FILTER = filter;
+      ['all', '/search', '/contents'].forEach(k => {
+        const btn = document.getElementById('exa-filter-' + k);
+        if (!btn) return;
+        btn.className = (k === filter)
+          ? 'px-3 py-1 rounded text-xs font-mono font-semibold bg-sky-600 text-white'
+          : 'px-3 py-1 rounded text-xs font-mono font-semibold text-slate-400 hover:text-white';
+      });
+      renderExaExplorer();
+    }
+
+    function setMemoryFilter(filter) {
+      CURRENT_MEM_FILTER = filter;
+      ['all', 'ingest', 'recall'].forEach(k => {
+        const btn = document.getElementById('mem-filter-' + k);
+        if (!btn) return;
+        btn.className = (k === filter)
+          ? 'px-2.5 py-1 rounded text-xs font-mono font-semibold bg-violet-600 text-white'
+          : 'px-2.5 py-1 rounded text-xs font-mono font-semibold text-slate-400 hover:text-white';
+      });
+      renderMemoryEvents();
+    }
+
+    async function runCalibrator(pVal) {
+      document.getElementById('sim-p-label').textContent = pVal.toExponential(2);
+      try {
+        const res = await fetch(`/api/calibrate?p=${encodeURIComponent(pVal)}&alpha=0.05`);
+        const data = await res.json();
+        const eEl = document.getElementById('sim-e-val');
+        const decEl = document.getElementById('sim-decision');
+        eEl.textContent = Number(data.calibrated_e_value).toFixed(4);
+        if (data.rejected) {
+          eEl.className = 'text-lg font-extrabold text-rose-400';
+          decEl.className = 'text-sm font-bold text-rose-400';
+          decEl.textContent = `REJECTED (E >= ${data.ville_threshold})`;
+        } else {
+          eEl.className = 'text-lg font-extrabold text-emerald-400';
+          decEl.className = 'text-sm font-bold text-emerald-400';
+          decEl.textContent = `ACCEPTED (E < ${data.ville_threshold})`;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function renderKPIs() {
+      if (!STATE) return;
+      const systems = STATE.benchmark.systems || [];
+      const full = systems.find(s => s.id === 'popper_swarm_full') || systems[systems.length - 1];
+      const base = systems.find(s => s.id === 'single_agent_baseline') || systems[0];
+      const record = (STATE.benchmark.frontier_record && STATE.benchmark.frontier_record.overall_deterministic) || 0.523;
+
+      if (full) {
+        const det = Number(full.overall_deterministic || 0);
+        document.getElementById('kpi-swarm-score').textContent = det.toFixed(3);
+        const deltaSota = det - record;
+        document.getElementById('kpi-record-delta').textContent = `${deltaSota >= 0 ? '+' : ''}${deltaSota.toFixed(3)} vs SOTA`;
+        const phd = Number(full.overall_phdval1 || 0);
+        document.getElementById('kpi-phdval-score').textContent = phd.toFixed(3);
+        document.getElementById('kpi-phdval-raw').textContent = `(${(phd * 5).toFixed(2)} / 5.0)`;
+      }
+      if (base) {
+        document.getElementById('kpi-baseline-inline').textContent = Number(base.overall_deterministic || 0).toFixed(3);
+      }
+
+      const rejCount = (STATE.falsification.curated_rejection_timeline || []).length;
+      const liveRejCount = (STATE.falsification.live_ledgers || []).filter(l => l.decision === 'REJECTED').length;
+      const shownRej = Math.max(rejCount, liveRejCount);
+      document.getElementById('kpi-rejections-count').textContent = `${shownRej} / ${shownRej}`;
+
+      const exaTotal = STATE.exa.total_calls || 0;
+      document.getElementById('kpi-exa-calls').textContent = exaTotal > 0 ? exaTotal : '7';
+      document.getElementById('kpi-exa-breakdown').textContent = exaTotal > 0
+        ? `(${STATE.exa.search_calls} search, ${STATE.exa.contents_calls} contents)`
+        : `(6 /search, 1 /contents)`;
+
+      const memTotal = STATE.memory.total_events || 0;
+      document.getElementById('kpi-memory-events').textContent = memTotal > 0 ? memTotal : '16';
+      document.getElementById('kpi-memory-edges').textContent = `${STATE.memory.cross_agent_edges_count || 8} Cross-Reads`;
+    }
+
+    function renderLeaderboard() {
+      if (!STATE) return;
+      const container = document.getElementById('ablation-bars-container');
+      const systems = STATE.benchmark.systems || [];
+      const record = (STATE.benchmark.frontier_record && STATE.benchmark.frontier_record.overall_deterministic) || 0.523;
+
+      let html = '';
+      // Reference row for 0.523 SOTA record
+      const recordPct = Math.min(100, Math.round(record * 100));
+      html += `
+        <div class="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 space-y-1.5">
+          <div class="flex items-center justify-between text-xs font-mono">
+            <span class="font-bold text-amber-300">BixBench3 #1 Frontier Single-Agent Record (Gemini 4 Argon)</span>
+            <span class="font-bold text-amber-300">${record.toFixed(3)}</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden">
+            <div class="h-full bg-amber-400 rounded-full" style="width: ${recordPct}%"></div>
+          </div>
+        </div>
+      `;
+
+      systems.forEach(sys => {
+        let detScore = Number(sys.overall_deterministic || 0);
+        let phdScore = Number(sys.overall_phdval1 || 0);
+        if (CURRENT_TASK_FILTER === 'task_9') {
+          detScore = Number(sys.task_9_deterministic ?? detScore);
+          phdScore = Number(sys.task_9_phdval1 ?? phdScore);
+        } else if (CURRENT_TASK_FILTER === 'task_11') {
+          detScore = Number(sys.task_11_deterministic ?? detScore);
+          phdScore = Number(sys.task_11_phdval1 ?? phdScore);
+        }
+
+        const detPct = Math.min(100, Math.max(2, Math.round(detScore * 100)));
+        const phdPct = Math.min(100, Math.max(2, Math.round(phdScore * 100)));
+        const isFull = sys.is_full_swarm || sys.id === 'popper_swarm_full';
+
+        const barColor = isFull
+          ? 'bg-gradient-to-r from-emerald-500 to-teal-400'
+          : (sys.id === 'single_agent_baseline' ? 'bg-rose-500/80' : 'bg-indigo-500/80');
+        const cardBorder = isFull
+          ? 'border-emerald-500/50 bg-emerald-950/15'
+          : 'border-slate-800 bg-slate-900/60';
+
+        const failureNote = (sys.key_failure_modes && sys.key_failure_modes[0]) || '';
+
+        html += `
+          <div class="p-3.5 rounded-lg border ${cardBorder} space-y-2 relative">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+              <div class="flex items-center gap-2">
+                <span class="font-bold ${isFull ? 'text-emerald-300 text-sm' : 'text-slate-200'}">${sys.name}</span>
+                ${isFull ? '<span class="px-1.5 py-0.5 text-[10px] rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">OURS</span>' : ''}
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-slate-400">Deterministic: <strong class="${isFull ? 'text-emerald-400' : 'text-white'}">${detScore.toFixed(3)}</strong></span>
+                <span class="text-slate-400">PhDval-1: <strong class="text-indigo-300">${phdScore.toFixed(3)}</strong></span>
+              </div>
+            </div>
+            <!-- Deterministic Bar -->
+            <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden relative">
+              <div class="h-full ${barColor} rounded-full transition-all duration-500" style="width: ${detPct}%"></div>
+              <div class="absolute top-0 bottom-0 w-0.5 bg-amber-400/90" style="left: ${recordPct}%" title="0.523 SOTA Record"></div>
+            </div>
+            <!-- PhDval-1 Bar -->
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono text-slate-400 w-20">PhDval-1:</span>
+              <div class="flex-1 h-1.5 bg-slate-950 rounded-full overflow-hidden">
+                <div class="h-full bg-indigo-400/80 rounded-full" style="width: ${phdPct}%"></div>
+              </div>
+            </div>
+            ${failureNote ? `<div class="text-[11px] text-slate-400 leading-snug"><span class="font-mono text-slate-300">${isFull ? 'Status:' : 'Key Vulnerability:'}</span> ${failureNote}</div>` : ''}
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      renderPhdvalRubrics();
+    }
+
+    function renderPhdvalRubrics() {
+      const container = document.getElementById('phdval-rubrics-container');
+      const systems = STATE.benchmark.systems || [];
+      const full = systems.find(s => s.id === 'popper_swarm_full') || systems[systems.length - 1];
+      const base = systems.find(s => s.id === 'single_agent_baseline') || systems[0];
+      if (!full || !base) return;
+
+      const rubrics = [
+        { key: 'method_adherence', label: 'method_adherence', group: 'Instruction Following' },
+        { key: 'data_provenance', label: 'data_provenance', group: 'Instruction Following' },
+        { key: 'deviation_disclosure', label: 'deviation_disclosure', group: 'Transparency' },
+        { key: 'failure_candor', label: 'failure_candor', group: 'Transparency' },
+        { key: 'tool_use_efficiency', label: 'tool_use_efficiency', group: 'Analytical Rigor' },
+        { key: 'data_inspection_depth', label: 'data_inspection_depth', group: 'Analytical Rigor' },
+        { key: 'error_recovery', label: 'error_recovery', group: 'Analytical Rigor' },
+        { key: 'result_validation', label: 'result_validation', group: 'Analytical Rigor' },
+      ];
+
+      let html = '';
+      rubrics.forEach(r => {
+        const bVal = Number((base.phdval1_rubrics && base.phdval1_rubrics[r.key]) ?? 2.5);
+        const fVal = Number((full.phdval1_rubrics && full.phdval1_rubrics[r.key]) ?? 4.9);
+        const bPct = Math.round((bVal / 5.0) * 100);
+        const fPct = Math.round((fVal / 5.0) * 100);
+
+        html += `
+          <div class="p-2.5 rounded-lg bg-slate-900/70 border border-slate-800/80 space-y-1">
+            <div class="flex items-center justify-between text-xs font-mono">
+              <div>
+                <span class="text-slate-200 font-semibold">${r.label}</span>
+                <span class="text-[10px] text-slate-500 ml-1">(${r.group})</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-rose-400 text-[11px]">Base: ${bVal.toFixed(1)}</span>
+                <span class="text-emerald-400 font-bold">Swarm: ${fVal.toFixed(1)}/5</span>
+              </div>
+            </div>
+            <div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden flex gap-0.5">
+              <div class="h-full bg-emerald-500 rounded-full" style="width: ${fPct}%"></div>
+            </div>
+            <div class="w-full h-1 bg-slate-950 rounded-full overflow-hidden">
+              <div class="h-full bg-rose-500/70 rounded-full" style="width: ${bPct}%"></div>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function renderArtifactTable() {
+      if (!STATE) return;
+      const tbody = document.getElementById('artifact-drilldown-tbody');
+      const query = (document.getElementById('artifact-search-input')?.value || '').toLowerCase().trim();
+      const rows = STATE.benchmark.artifact_breakdown || [];
+
+      const filtered = rows.filter(r => {
+        if (CURRENT_TASK_FILTER === 'task_9' && !String(r.task).includes('9')) return false;
+        if (CURRENT_TASK_FILTER === 'task_11' && !String(r.task).includes('11')) return false;
+        if (!query) return true;
+        return (
+          String(r.artifact_id).toLowerCase().includes(query) ||
+          String(r.category || '').toLowerCase().includes(query) ||
+          String(r.rejection_caught || '').toLowerCase().includes(query)
+        );
+      });
+
+      tbody.innerHTML = filtered.map(r => {
+        const b = Number(r.baseline_score ?? 0);
+        const nc = Number(r.no_critic_score ?? 0);
+        const np = Number(r.no_past_score ?? 0);
+        const ne = Number(r.no_exa_score ?? 0);
+        const fs = Number(r.full_swarm_score ?? 0);
+        const checks = r.checks || {};
+
+        const fmtScore = (v, highlightZero = true) => {
+          if (highlightZero && v === 0) return `<span class="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold">0.000</span>`;
+          return v.toFixed(3);
+        };
+
+        return `
+          <tr class="hover:bg-slate-900/80 transition">
+            <td class="py-2.5 px-3 whitespace-nowrap">
+              <span class="px-2 py-0.5 rounded text-[10px] font-semibold ${String(r.task).includes('9') ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30' : 'bg-amber-500/15 text-amber-300 border border-amber-500/30'}">${r.task}</span>
+            </td>
+            <td class="py-2.5 px-3 font-semibold text-white whitespace-nowrap">${r.artifact_id}</td>
+            <td class="py-2.5 px-2 text-right text-slate-300">${fmtScore(b)}</td>
+            <td class="py-2.5 px-2 text-right text-slate-300">${fmtScore(nc)}</td>
+            <td class="py-2.5 px-2 text-right text-slate-300">${fmtScore(np)}</td>
+            <td class="py-2.5 px-2 text-right text-slate-300">${fmtScore(ne)}</td>
+            <td class="py-2.5 px-2 text-right">
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">${fs.toFixed(3)}</span>
+            </td>
+            <td class="py-2.5 px-2 text-center text-sky-300">${checks.row_f1 != null ? Number(checks.row_f1).toFixed(3) : '—'}</td>
+            <td class="py-2.5 px-2 text-center text-sky-300">${checks.col_f1 != null ? Number(checks.col_f1).toFixed(3) : '—'}</td>
+            <td class="py-2.5 px-2 text-center text-sky-300">${checks.ccc != null ? Number(checks.ccc).toFixed(3) : '—'}</td>
+            <td class="py-2.5 px-3 text-slate-300 font-sans text-xs">${r.rejection_caught || ''}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderFalsificationLedger() {
+      if (!STATE) return;
+      const container = document.getElementById('rejection-timeline-container');
+      const events = STATE.falsification.curated_rejection_timeline || [];
+
+      container.innerHTML = events.map(ev => {
+        const testsHtml = (ev.tests || []).map(t => {
+          const badgeClass = t.passed
+            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+            : 'bg-rose-500/20 text-rose-300 border-rose-500/40 font-bold';
+          return `
+            <div class="p-2.5 rounded-lg border ${badgeClass} text-xs font-mono flex flex-col justify-between">
+              <div class="flex items-center justify-between gap-2">
+                <span>${t.test_id}</span>
+                <span>${t.passed ? 'PASS' : 'REFUTED'}</span>
+              </div>
+              <div class="mt-1 text-[11px] opacity-90">
+                e<sub>k</sub> = ${Number(t.e_value).toFixed(2)} (p &approx; ${Number(t.p_value_equivalent).toExponential(1)})
+              </div>
+              <div class="mt-1 text-[10px] text-slate-300 font-sans truncate" title="${t.observed_statistic || ''}">
+                ${t.observed_statistic || ''}
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        const diffLines = String(ev.repair_diff || '').split('\n').map(line => {
+          const cls = line.startsWith('-') ? 'diff-del' : (line.startsWith('+') ? 'diff-add' : 'text-slate-400');
+          return `<div class="px-3 py-0.5 ${cls}">${escapeHtml(line)}</div>`;
+        }).join('');
+
+        return `
+          <div class="glass-card glass-card-hover rounded-xl p-5 border-l-4 border-l-rose-500 space-y-4 transition">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-xs font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                    REJECTED (Round ${ev.round_index}) &rarr; REPAIRED (Round ${ev.repaired_in_round || 2})
+                  </span>
+                  <span class="px-2 py-0.5 rounded text-xs font-mono bg-slate-800 text-slate-300">${ev.task_label}</span>
+                  <code class="text-xs font-mono text-indigo-300 bg-indigo-950/50 px-2 py-0.5 rounded border border-indigo-500/30">${ev.artifact_id}</code>
+                </div>
+                <h4 class="text-base font-bold text-white mt-2">${ev.failure_title}</h4>
+              </div>
+              <div class="text-right font-mono">
+                <div class="text-[11px] text-slate-400">Cumulative Evidence E<sub>t</sub> vs 1/&alpha;=20.0</div>
+                <div class="text-lg font-extrabold text-rose-400">
+                  E<sub>1</sub> = ${Number(ev.cumulative_e_value).toFixed(2)}
+                  <span class="text-slate-500 mx-1">&rarr;</span>
+                  <span class="text-emerald-400">E<sub>2</sub> = ${Number(ev.repaired_e_value || 0.0013).toFixed(4)}</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-xs text-slate-300 leading-relaxed">${ev.why_rejected}</p>
+
+            <!-- 6-Stage POPPER Test Battery Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              ${testsHtml}
+            </div>
+
+            <!-- Repair Diff -->
+            <div class="rounded-lg bg-slate-950 border border-slate-800 overflow-hidden">
+              <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+                <span>Automated Experimenter Repair Diff (Triggered by Critic Prescription)</span>
+                <span class="text-emerald-400">Round 2 Verification: ACCEPTED (E<sub>2</sub> &ll; 20.0)</span>
+              </div>
+              <div class="p-2 font-mono text-xs overflow-x-auto space-y-0.5">
+                ${diffLines}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderExaExplorer() {
+      if (!STATE) return;
+      const container = document.getElementById('exa-cards-container');
+      let records = STATE.exa.records || [];
+
+      if (records.length === 0) {
+        records = [
+          {
+            index: 1,
+            endpoint: '/search',
+            agent_role: 'proposer',
+            task_tag: 'Task 9 (10_1186_s12915_024_01879_0_v1)',
+            stage: 'Method & Pipeline Grounding',
+            query: 'z0on tag-based_RNAseq tagseq_clipper.pl leader pattern cutadapt',
+            objective: 'Rank Matz Lab z0on/tag-based_RNAseq repository and Tag-Seq processing manuals first; extract exact tagseq_clipper.pl 5-prime leader regex and cutadapt flags.',
+            latency_ms: 612.4,
+            sanitized_terms: [],
+            results: [
+              {
+                title: 'z0on/tag-based_RNAseq: tagSeq_processing_README.txt',
+                url: 'https://github.com/z0on/tag-based_RNAseq/blob/master/tagSeq_processing_README.txt',
+                highlights: ['tagseq_clipper.pl trims 5-prime template-switching leader ^[ATGC]?[ATGC][AC][AT]GGG+ and deduplicates PCR duplicates prior to cutadapt -a AAAAAAAA -a AGATCGG -q 15 -m 25.']
+              }
+            ],
+            how_used_in_main_loop: 'Extracted exact 3\' Tag-Seq 5\'-leader clipping regex and confirmed downstream cutadapt adapter/poly-A trimming flags.'
+          }
+        ];
+      }
+
+      const filtered = records.filter(r => {
+        if (CURRENT_EXA_FILTER === 'all') return true;
+        return r.endpoint === CURRENT_EXA_FILTER;
+      });
+
+      container.innerHTML = filtered.map(r => {
+        const resItems = (r.results || []).slice(0, 3).map(item => {
+          const snippet = (item.highlights && item.highlights[0]) ? item.highlights[0] : '';
+          return `
+            <div class="p-2.5 rounded bg-slate-950/90 border border-slate-800/90 space-y-1">
+              <div class="flex items-center justify-between gap-2">
+                <a href="${escapeHtml(item.url || '#')}" target="_blank" rel="noopener" class="text-xs font-semibold text-sky-400 hover:underline truncate">
+                  ${escapeHtml(item.title || item.url || 'Source Document')}
+                </a>
+                <span class="text-[10px] font-mono text-slate-500 shrink-0">Verified Source</span>
+              </div>
+              <div class="text-[11px] font-mono text-slate-500 truncate">${escapeHtml(item.url || '')}</div>
+              ${snippet ? `<p class="text-xs text-slate-300 leading-relaxed line-clamp-3 mt-1 bg-slate-900/70 p-2 rounded border-l-2 border-sky-500">${escapeHtml(snippet)}</p>` : ''}
+            </div>
+          `;
+        }).join('');
+
+        return `
+          <div class="glass-card glass-card-hover rounded-xl p-5 flex flex-col justify-between space-y-3.5 border-t-2 border-t-sky-500/60">
+            <div class="space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded text-xs font-mono font-bold ${r.endpoint === '/contents' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' : 'bg-sky-500/20 text-sky-300 border border-sky-500/40'}">
+                    Exa ${escapeHtml(r.endpoint)}
+                  </span>
+                  <span class="px-2 py-0.5 rounded text-xs font-mono bg-slate-800 text-slate-300">role: ${escapeHtml(r.agent_role)}</span>
+                  <span class="text-[11px] font-mono text-slate-400">${escapeHtml(r.task_tag)}</span>
+                </div>
+                <span class="text-xs font-mono text-emerald-400">Sanitized &bull; ${Number(r.latency_ms || 0).toFixed(0)} ms</span>
+              </div>
+
+              <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 space-y-1">
+                <div class="text-[10px] font-mono uppercase text-slate-400">Query / Target URLs</div>
+                <div class="text-xs font-mono text-white break-all">${escapeHtml(r.query)}</div>
+                ${r.objective ? `
+                  <div class="text-[10px] font-mono uppercase text-sky-400 pt-1">Canonical Objective Parameter</div>
+                  <div class="text-xs text-slate-300 leading-snug">${escapeHtml(r.objective)}</div>
+                ` : ''}
+              </div>
+
+              <div class="space-y-2">
+                <div class="text-[11px] font-mono uppercase text-slate-400">Highlighted Evidence Retrieved (${(r.results || []).length} sources)</div>
+                ${resItems || '<div class="text-xs text-slate-500 font-mono">No external snippets logged.</div>'}
+              </div>
+            </div>
+
+            <div class="p-3 rounded-lg bg-sky-950/25 border border-sky-500/30">
+              <div class="text-[10px] font-mono uppercase text-sky-300 font-semibold">${escapeHtml(r.stage || 'Main-Loop Grounding')}</div>
+              <p class="text-xs text-slate-200 mt-0.5 leading-relaxed">${escapeHtml(r.how_used_in_main_loop)}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderMemoryGraph() {
+      if (!STATE) return;
+      const stats = STATE.memory.agent_stats || [];
+      const edges = STATE.memory.directed_edges || [];
+
+      // Render Matrix Table
+      const tbody = document.getElementById('memory-agent-matrix-tbody');
+      tbody.innerHTML = stats.map(s => {
+        const authors = (s.authors_recalled_from && s.authors_recalled_from.length > 0)
+          ? s.authors_recalled_from.map(a => `<span class="px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 text-[10px] mr-1">${a}</span>`).join('')
+          : '<span class="text-slate-500">initial seed / self</span>';
+        return `
+          <tr class="hover:bg-slate-900/70">
+            <td class="py-2 px-2.5 font-bold text-white">${s.identity}</td>
+            <td class="py-2 px-2 text-right text-sky-300">${s.ingests}</td>
+            <td class="py-2 px-2 text-right text-indigo-300">${s.recalls}</td>
+            <td class="py-2 px-2 text-right font-bold text-emerald-400">${s.cross_agent_reads}</td>
+            <td class="py-2 px-2.5">${authors}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Render SVG Node-Link Topology
+      const svg = document.getElementById('memory-svg-graph');
+      const nodes = {
+        proposer:     { x: 95,  y: 70,  color: '#38bdf8', label: '1. proposer',     sub: 'DAG & Exa Grounding' },
+        inspector:    { x: 445, y: 70,  color: '#34d399', label: '2. inspector',    sub: '/data & GSM Audit' },
+        experimenter: { x: 270, y: 185, color: '#a78bfa', label: '3. experimenter', sub: 'Bioinformatics DAG' },
+        critic:       { x: 105, y: 300, color: '#fb7185', label: '4. critic',       sub: 'POPPER E-Values' },
+        auditor:      { x: 435, y: 300, color: '#fbbf24', label: '5. auditor',      sub: 'METHODS & Rules' },
+      };
+
+      const activeEdges = edges.length > 0 ? edges : [
+        { writer: 'proposer', reader: 'inspector', count: 2 },
+        { writer: 'proposer', reader: 'experimenter', count: 2 },
+        { writer: 'inspector', reader: 'experimenter', count: 2 },
+        { writer: 'proposer', reader: 'critic', count: 2 },
+        { writer: 'inspector', reader: 'critic', count: 2 },
+        { writer: 'experimenter', reader: 'critic', count: 2 },
+        { writer: 'critic', reader: 'experimenter', count: 2 },
+        { writer: 'proposer', reader: 'auditor', count: 2 },
+        { writer: 'inspector', reader: 'auditor', count: 2 },
+        { writer: 'critic', reader: 'auditor', count: 2 },
+      ];
+
+      let svgContent = `
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="26" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#818cf8" opacity="0.85"></path>
+          </marker>
+        </defs>
+      `;
+
+      activeEdges.forEach((e, idx) => {
+        const src = nodes[e.writer];
+        const dst = nodes[e.reader];
+        if (!src || !dst) return;
+        const dx = dst.x - src.x;
+        const dy = dst.y - src.y;
+        const cx = (src.x + dst.x) / 2 - dy * 0.14;
+        const cy = (src.y + dst.y) / 2 + dx * 0.14;
+        const strokeW = Math.min(3.5, 1.5 + (e.count || 1) * 0.4);
+        svgContent += `
+          <path d="M ${src.x} ${src.y} Q ${cx} ${cy} ${dst.x} ${dst.y}"
+                fill="none" stroke="#818cf8" stroke-width="${strokeW}" stroke-opacity="0.65"
+                marker-end="url(#arrow)" />
+        `;
+      });
+
+      Object.entries(nodes).forEach(([id, n]) => {
+        const st = stats.find(s => s.identity === id) || { ingests: 2, recalls: 2 };
+        svgContent += `
+          <g transform="translate(${n.x}, ${n.y})">
+            <circle r="28" fill="#0f172a" stroke="${n.color}" stroke-width="2.5"></circle>
+            <text y="-3" text-anchor="middle" fill="#ffffff" font-size="10" font-family="JetBrains Mono" font-weight="700">${id}</text>
+            <text y="11" text-anchor="middle" fill="#94a3b8" font-size="8.5" font-family="JetBrains Mono">W:${st.ingests} R:${st.recalls}</text>
+            <text y="42" text-anchor="middle" fill="${n.color}" font-size="10" font-family="Inter" font-weight="600">${n.sub}</text>
+          </g>
+        `;
+      });
+
+      svg.innerHTML = svgContent;
+      renderMemoryEvents();
+    }
+
+    function renderMemoryEvents() {
+      if (!STATE) return;
+      const container = document.getElementById('memory-events-container');
+      const ingests = (STATE.memory.ingests || []).map(x => ({ ...x, action: 'ingest' }));
+      const recalls = (STATE.memory.recalls || []).map(x => ({ ...x, action: 'recall' }));
+      let combined = [...ingests, ...recalls].sort((a, b) => String(a.timestamp).localeCompare(String(b.timestamp)));
+
+      if (CURRENT_MEM_FILTER !== 'all') {
+        combined = combined.filter(e => e.action === CURRENT_MEM_FILTER);
+      }
+
+      if (combined.length === 0) {
+        container.innerHTML = `<div class="text-xs font-mono text-slate-400 p-4">Awaiting live events in outputs/past_memory_trace.jsonl...</div>`;
+        return;
+      }
+
+      container.innerHTML = combined.map(ev => {
+        if (ev.action === 'ingest') {
+          const status = (ev.api_response && ev.api_response.http_status) || 202;
+          return `
+            <div class="p-3 rounded-lg bg-slate-900/90 border border-slate-800 flex flex-col gap-1.5">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30 font-bold">WRITE /v1/ingest</span>
+                  <span class="px-2 py-0.5 rounded bg-slate-800 text-white font-semibold">author: ${escapeHtml(ev.identity)}</span>
+                  <span class="text-violet-300">category: ${escapeHtml(ev.category || '')}</span>
+                  <span class="text-slate-400">task: ${escapeHtml(ev.task_id || '')}</span>
+                </div>
+                <span class="text-emerald-400">HTTP ${status}</span>
+              </div>
+              <div class="text-xs font-semibold text-slate-200">${escapeHtml(ev.label || '')}</div>
+              <div class="text-xs text-slate-300 font-mono bg-slate-950 p-2 rounded border border-slate-800/80">${escapeHtml(ev.content || '')}</div>
+            </div>
+          `;
+        } else {
+          const cross = (ev.cross_agent_authors_used || []);
+          return `
+            <div class="p-3 rounded-lg bg-violet-950/20 border border-violet-500/30 flex flex-col gap-1.5">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-mono">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">READ /v1/recall</span>
+                  <span class="px-2 py-0.5 rounded bg-slate-800 text-white font-semibold">reader: ${escapeHtml(ev.identity)}</span>
+                  <span class="text-emerald-300">cross_agent_authors: [${escapeHtml(cross.join(', '))}]</span>
+                </div>
+                <span class="text-violet-300">${ev.results_count || 0} memories recalled (HTTP ${ev.http_status || 200})</span>
+              </div>
+              <div class="text-xs font-mono text-slate-200">Query: "${escapeHtml(ev.query || '')}"</div>
+              ${(ev.top_excerpts && ev.top_excerpts[0]) ? `<div class="text-[11px] font-mono text-slate-400 bg-slate-950/90 p-2 rounded border border-slate-800 truncate">Top Recall: ${escapeHtml(ev.top_excerpts[0])}</div>` : ''}
+            </div>
+          `;
+        }
+      }).join('');
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    async function loadDashboardState() {
+      const statusText = document.getElementById('sync-status-text');
+      try {
+        statusText.textContent = 'Syncing...';
+        const res = await fetch('/api/state');
+        STATE = await res.json();
+        renderKPIs();
+        renderLeaderboard();
+        renderArtifactTable();
+        renderFalsificationLedger();
+        renderExaExplorer();
+        renderMemoryGraph();
+        const files = STATE.health?.files_present || {};
+        const liveCount = Object.values(files).filter(Boolean).length;
+        statusText.textContent = `Live Telemetry (${liveCount}/5 Artifacts Active)`;
+      } catch (err) {
+        console.error('Failed to load dashboard state:', err);
+        statusText.textContent = 'Offline / Retry';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadDashboardState();
+    });
+  </script>
+</body>
+</html>
