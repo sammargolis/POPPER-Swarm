@@ -13,7 +13,7 @@ from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.util import Inches, Pt
 
 
-ROOT = Path("/Users/sammargolis/projects/bixbench3-swarm")
+ROOT = Path(__file__).resolve().parents[1]
 PPTX_FULL_OUT = ROOT / "outputs" / "POPPER_Swarm_BixBench3_Presentation.pptx"
 HTML_FULL_OUT = ROOT / "dashboard" / "slides.html"
 PPTX_3_OUT = ROOT / "outputs" / "POPPER_Swarm_3Slide_Pitch.pptx"
@@ -240,7 +240,7 @@ def build_slide_1_story(prs: Presentation, page_label: str) -> None:
 
     add_footer(
         slide,
-        "Figure 1: Official BixBench3 score on representative tables before and after POPPER Critic falsification (13 / 13 faulty Round-1 drafts repaired).",
+        "Figure 1: Official BixBench3 score on representative tables before and after POPPER Critic falsification (12 / 13 faulty Round-1 drafts repaired).",
         page_label,
     )
 
@@ -510,7 +510,7 @@ def build_appendix_slides(prs: Presentation, start_num: int, total_num: int) -> 
         ("Exa /search (Critic F6 Check)", "Found REST-knockout neural markers (SNAP25, SYP, SYN1, BDNF) with target DOI blocked.", "Caught alphabetical factor bug that inverted HEK293 log2FC signs.", "0.0000 to 0.8754 (HEK293)"),
         ("Exa /search (Critic F6 Check)", "Found 1,4-dioxane liver P450 markers (Cyp2b10, Cyp1a1) and PIANO directional classes.", "Verified dose-response direction and GSEA p-value extraction.", "0.5096 to 0.6441 (GSEA)"),
         ("past.dev /ingest + /recall (Inspector)", "Stored data_facts: 28 SRR files -> 16 samples, _rep1 vs _1rep headers, 88-set GO filter.", "Prevented 50% read-depth loss and column header mismatch.", "0.4623 to 0.9902 (Counts)"),
-        ("past.dev /ingest + /recall (Critic)", "Stored 13 rejected_hypotheses with deterministic R/Python repair prescriptions.", "Repaired 13 / 13 broken Round-1 tables in Round 2.", "13 / 13 fixed (100%)"),
+        ("past.dev /ingest + /recall (Critic)", "Stored 13 rejected_hypotheses with deterministic R/Python repair prescriptions.", "Repaired 12 / 13 broken Round-1 tables in Round 2.", "12 / 13 fixed (92%)"),
         ("past.dev /ingest + /recall (Auditor)", "Stored global_learnings: 'Keep .version on raw counts; strip .version on DEG tables.'", "Prevented repeat Ensembl ID formatting bugs across studies.", "0.4783 to 0.7413 (+26.3 pts)"),
     ]
     t3 = s3.shapes.add_table(len(rows3), 4, Inches(0.75), Inches(1.72), Inches(11.83), Inches(4.75)).table
@@ -567,7 +567,7 @@ def build_appendix_slides(prs: Presentation, start_num: int, total_num: int) -> 
     add_header(
         s5,
         "Appendix A5: Artifact-Level Round 1 Rejection and Round 2 Repair Ledger",
-        "13 / 13 broken Round-1 tables were rejected by the Critic (E_t >= 20.0) and repaired in Round 2.",
+        "13 / 13 broken Round-1 tables were rejected by the Critic (E_t >= 20.0); 12 were repaired in Round 2.",
     )
     rows5 = [
         ("Rebuilt Study Artifact", "Round 1 (Draft)", "POPPER Critic Rejection Cause", "Round 2 (Fixed)", "Concordance / Metric"),
@@ -832,7 +832,7 @@ def build_html_deck(is_condensed: bool) -> str:
     </div>
   </div>
   <div class="footer">
-    <div>Figure 1: Official BixBench3 score on representative tables before and after POPPER Critic falsification (13 / 13 faulty Round-1 drafts repaired).</div>
+    <div>Figure 1: Official BixBench3 score on representative tables before and after POPPER Critic falsification (12 / 13 faulty Round-1 drafts repaired).</div>
     <div>{s1_label}</div>
   </div>
 </section>
@@ -1155,8 +1155,8 @@ def build_html_deck(is_condensed: bool) -> str:
         <tr>
           <td><strong>past.dev /ingest + /recall</strong> (Critic)</td>
           <td>Stored 13 <code>rejected_hypotheses</code> with deterministic R/Python repair prescriptions.</td>
-          <td>Repaired 13 / 13 broken Round-1 tables in Round 2.</td>
-          <td class="num good">13 / 13 fixed (100%)</td>
+          <td>Repaired 12 / 13 broken Round-1 tables in Round 2.</td>
+          <td class="num good">12 / 13 fixed (92%)</td>
         </tr>
         <tr>
           <td><strong>past.dev /ingest + /recall</strong> (Auditor)</td>
@@ -1251,7 +1251,7 @@ def build_html_deck(is_condensed: bool) -> str:
 <section class="slide">
   <div>
     <h1>Appendix A5: Artifact-Level Round 1 Rejection and Round 2 Repair Ledger</h1>
-    <div class="subtitle">13 / 13 broken Round-1 tables were rejected by the Critic (E_t &ge; 20.0) and repaired in Round 2.</div>
+    <div class="subtitle">13 / 13 broken Round-1 tables were rejected by the Critic (E_t &ge; 20.0); 12 were repaired in Round 2.</div>
     <table>
       <thead>
         <tr>

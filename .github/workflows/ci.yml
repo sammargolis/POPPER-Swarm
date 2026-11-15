@@ -13,21 +13,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.11
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -e .
+          pip install -e ".[dev]"
 
       - name: Run POPPER e-value and BixBench3 falsification test suite
         run: |
-          PYTHONPATH=src:. pytest -q
+          pytest -q
 
       - name: Verify POPPER benchmark CLI and ledger integrity
         run: |
-          PYTHONPATH=src:. bash benchmark_scripts/run_bixbench3.sh
+          bash benchmark_scripts/run_bixbench3.sh

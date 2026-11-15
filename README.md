@@ -37,7 +37,7 @@ Guided by Karl Popper's principle of falsification and building on the sequentia
 
 ## Key Results on BixBench3 (5-Way Controlled Ablation)
 
-Across **113 raw sequencing FASTQ libraries (27.3 GB)** rebuilt end-to-end into **19 downstream count, DESeq2, clusterProfiler, and PIANO tables**, our POPPER Critic caught and rejected **13 / 13 faulty Round-1 candidate tables** ($E_t \in [78.1, 312500.0] \ge 20.0$) and automatically repaired all **19 / 19 tables in Round 2** ($E_t \le 0.0312 < 20.0$).
+Across **113 raw sequencing FASTQ libraries (27.3 GB)** rebuilt end-to-end into **19 downstream count, DESeq2, clusterProfiler, and PIANO tables**, our POPPER Critic caught and rejected **13 / 13 faulty Round-1 candidate tables** ($E_t \in [78.1, 312500.0] \ge 20.0$) and automatically repaired **12 / 13** of them in Round 2, for **18 / 19 tables accepted** ($E_t \le 0.0312 < 20.0$); `dna_damage_enrichment` remained rejected ($E_t = 156.25$).
 
 <p align="center"><img src="figs/bixbench3_ablation_results.png" alt="BixBench3 5-Way Ablation and Before-vs-After Falsification Results" width="880px" /></p>
 
@@ -75,9 +75,10 @@ git clone https://github.com/sammargolis/POPPER-Swarm.git
 cd POPPER-Swarm
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
-pip install -e .
+pip install -e ".[dev]"
 ```
+
+To run the full BixBench3 benchmark pipeline, clone BixBench3 into `vendor/BixBench3` and install the `benchmark` extra (`pip install -e vendor/BixBench3 -e ".[benchmark]"`). The figure and slide builders need the `figures` extra.
 
 Add your API keys to the environment variables:
 
@@ -146,12 +147,12 @@ print(results)
 │   ├── REJECTIONS.md               # Audit log of all 13 falsified Round-1 hypotheses & Round-2 repairs
 │   ├── popper_ledger.json          # Machine-readable e-value trajectories (32 evaluations across 19 tables)
 │   ├── exa_provenance.jsonl        # 255 KB live Exa search & content retrieval provenance trace
-│   ├── past_memory_trace.jsonl     # 196 KB cross-agent past.dev memory ingest/recall trace
+│   ├── past_memory_trace.jsonl     # 157 KB cross-agent past.dev memory ingest/recall trace
 │   ├── benchmark_comparison.json   # Official BixBench3 grades & GPT-5.5 PhDval-1 5-way ablation scores
 │   ├── POPPER_Swarm_3Slide_Pitch.pdf
 │   └── POPPER_Swarm_BixBench3_Presentation.pdf
 ├── figs/                           # Architecture & benchmark figures
-├── tests/                          # 147 pytest unit and integration checks
+├── tests/                          # pytest unit and integration checks
 └── demo.ipynb                      # Interactive Jupyter notebook walkthrough
 ```
 

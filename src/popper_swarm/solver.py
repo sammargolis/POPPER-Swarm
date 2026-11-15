@@ -5,15 +5,13 @@ from __future__ import annotations
 import os
 from inspect_ai.agent import Agent, react
 from inspect_ai.model import CompactionAuto
-from inspect_ai.solver import Generate, Solver, TaskState, solver
+from inspect_ai.solver import solver
 from inspect_ai.tool import Tool, bash_session, python, text_editor, tool
 
 from bixbench3.inspect_harness.tools import request_web_access
 
-from .config import SwarmConfig
-from .falsification import run_popper_falsification_battery
 from .memory import PastMemoryClient
-from .search import EXA_LLM_SYSTEM_PROMPT_GUIDANCE, EXA_OBJECTIVE_DESCRIPTION, ExaResearchClient
+from .search import EXA_LLM_SYSTEM_PROMPT_GUIDANCE, ExaResearchClient
 
 
 @tool

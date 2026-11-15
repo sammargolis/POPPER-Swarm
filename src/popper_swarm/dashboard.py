@@ -225,9 +225,9 @@ def _default_benchmark_data() -> dict[str, Any]:
                 "task_9_phdval1": 0.8450,
                 "task_11_phdval1": 0.8450,
                 "rejections_caught": 13,
-                "rejections_repaired": 13,
+                "rejections_repaired": 12,
                 "key_failure_modes": [
-                    "All 13 faulty Round-1 candidate hypotheses caught by POPPER Critic (E_t >= 20.0) and 19/19 Round-2 artifacts verified (100% recovery)",
+                    "All 13 faulty Round-1 candidate hypotheses caught by POPPER Critic (E_t >= 20.0) 12/13 repaired and 18/19 Round-2 artifacts accepted (94.7% recovery)",
                 ],
                 "phdval1_rubrics": {
                     "method_adherence": 3.0,

@@ -5,7 +5,7 @@
   "rejection_threshold_e": 20.0,
   "calibration_formula": "e_k = 0.5 * (p_k ** -0.5)  [Vovk & Wang, 2021; Huang et al. POPPER, ICML 2025]",
   "total_evaluations": 32,
-  "total_round1_rejections_caught": 14,
+  "total_round1_rejections_caught": 13,
   "total_round2_artifacts_accepted": 18,
   "rejection_recovery_rate": 0.9474,
   "ledgers": [

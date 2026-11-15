@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
 from popper_swarm.config import SwarmConfig
 from popper_swarm.falsification import (
@@ -118,6 +120,7 @@ def test_popper_falsification_catches_version_suffix_and_inverted_sign(tmp_path:
     assert len(ledger_good.failed_tests) == 0
 
 
+@pytest.mark.skipif(not os.environ.get("PAST_API_KEY"), reason="requires a live past.dev PAST_API_KEY")
 def test_past_memory_multi_agent_cross_reads(tmp_path: Path) -> None:
     """Verify multiple agents write to and read from past.dev with cross-agent attribution."""
     cfg = SwarmConfig()

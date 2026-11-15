@@ -1,5 +1,7 @@
 # POPPER-Swarm: Falsification-Driven AI Scientist Swarm for BixBench3
 
+> **Note:** This is the original pre-implementation design plan. File names and paths below describe the planned layout; see the Repository Structure section of [`README.md`](README.md) for the layout that was built.
+
 ## 1. Executive Summary & Winning Thesis
 
 **Target Record:** BixBench3 (Edison Scientific) — 20 published computational biology studies rebuilt from raw data (138 total deterministic artifacts + PhDval-1 process judge). Current #1 leaderboard score: **0.523** (Gemini 4 Argon single-agent ReAct, ~$59/run).
@@ -75,7 +77,7 @@ flowchart TD
   1. *Method & Vignette Grounding (`proposer` & `experimenter`):* Calls `exa.search_and_contents()` / `exa.answer()` to fetch up-to-date Bioconductor/PyPI/GitHub tool documentation, CLI flags, and known version quirks (e.g., DESeq2 `lfcShrink` defaults, Cell Ranger 6.0.2 vs ARC 2.0.2 chemistry flags, edgeR `calcNormFactors`, MACS2/MACS3 peak calling parameters).
   2. *Biological Falsification Priors (`critic`):* Queries Exa for independent canonical biology facts (e.g., known stress-response genes in *C. elegans* intestine, canonical SHH medulloblastoma markers, expected genome sizes/chromosome naming) to test whether the Experimenter's output table has inverted fold-changes (`+log2FC` vs `-log2FC`) or scrambled sample labels.
   3. *Live Error Triage (`experimenter`):* When a bioinformatics binary or R package throws a cryptic error, queries Exa across GitHub issues, Biostars, and BioConductor support to resolve it on the first retry.
-- **Benchmark Anti-Cheating Compliance:** Our Exa wrapper (`src/popper_swarm/exa_client.py`) enforces the exact same integrity rules as BixBench3's `network_gateway/policy.py`: it automatically strips/blocks the target paper's DOI, title, author names, bioRxiv/publisher URLs, and deposited GEO/SRA study accessions from queries and results, and logs every Exa query, returned source URL, and snippet to `outputs/exa_provenance.jsonl` so judges can verify 100% clean scientific search.
+- **Benchmark Anti-Cheating Compliance:** Our Exa wrapper (`src/popper_swarm/search/exa_client.py`) enforces the exact same integrity rules as BixBench3's `network_gateway/policy.py`: it automatically strips/blocks the target paper's DOI, title, author names, bioRxiv/publisher URLs, and deposited GEO/SRA study accessions from queries and results, and logs every Exa query, returned source URL, and snippet to `outputs/exa_provenance.jsonl` so judges can verify 100% clean scientific search.
 
 ### past.dev: Multi-Agent Memory Challenge
 - **Multi-Agent Read/Write Matrix:**

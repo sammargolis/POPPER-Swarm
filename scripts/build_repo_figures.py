@@ -9,7 +9,7 @@ import matplotlib.patches as patches
 import numpy as np
 
 
-ROOT = Path("/Users/sammargolis/projects/bixbench3-swarm")
+ROOT = Path(__file__).resolve().parents[1]
 FIGS = ROOT / "figs"
 FIGS.mkdir(parents=True, exist_ok=True)
 
@@ -219,7 +219,7 @@ def build_ablation_chart() -> None:
 
     ax2.set_ylim(0, 1.12)
     ax2.set_ylabel("Official BixBench3 Table Score", fontsize=10, fontweight="bold")
-    ax2.set_title("B. Before vs. After POPPER Sequential Falsification (13/13 Repaired)", fontsize=11.5, fontweight="bold", pad=10)
+    ax2.set_title("B. Before vs. After POPPER Sequential Falsification (12/13 Repaired)", fontsize=11.5, fontweight="bold", pad=10)
     ax2.set_xticks(xb)
     ax2.set_xticklabels(labels_b, fontsize=8.8)
     ax2.grid(axis="y", linestyle=":", alpha=0.6)

@@ -7,13 +7,10 @@ import json
 import math
 import shutil
 import subprocess
-import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-import numpy as np
-import pandas as pd
 try:
     from inspect_ai.log import (
         EvalConfig,
@@ -29,14 +26,15 @@ try:
     from inspect_ai.model import ChatMessageAssistant, ChatMessageTool, ChatMessageUser
     from inspect_ai.tool import ToolCall
     from bixbench3.gcp_runner import load_public_task, stage_hf_case
-    from bixbench3.grading.process_judge import judge_run_dir, run_process_judge
-except ImportError:  # pragma: no cover - optional vendor runtime dependencies
-    pass
+    from bixbench3.grading.process_judge import judge_run_dir
+except ImportError as exc:  # pragma: no cover - optional `benchmark` extra
+    _BENCHMARK_IMPORT_ERROR: ImportError | None = exc
+else:
+    _BENCHMARK_IMPORT_ERROR = None
 
 from ..config import REPO_ROOT, SwarmConfig
 from ..memory import PastMemoryClient
 from .checks import run_popper_falsification_battery
-from .evalues import ArtifactFalsificationLedger, p_to_calibrated_e_value
 
 TASK_9_PAPER_ID = "10_1186_s12915_024_01879_0_v1"
 TASK_11_PAPER_ID = "10.1016_j.crtox.2021.01.003_v1"
@@ -116,6 +114,15 @@ TASK_1_BIO_PRIORS: dict[str, Any] = {
         "fbxa-158",
     ],
 }
+
+
+def _require_benchmark_extra() -> None:
+    """Raise a clear error when the optional BixBench3 / Inspect AI runtime is missing."""
+    if _BENCHMARK_IMPORT_ERROR is not None:
+        raise ImportError(
+            "BixBench3 grading requires the `benchmark` extra: "
+            'pip install -e vendor/BixBench3 -e ".[benchmark]"'
+        ) from _BENCHMARK_IMPORT_ERROR
 
 
 def get_task_9_artifact_specs() -> list[dict[str, Any]]:
@@ -521,6 +528,7 @@ def build_condition_eval_log(
     methods_md_text: str,
 ) -> Path:
     """Create a valid Inspect `.eval` log file for `bixbench3.grading.process_judge.run_process_judge`."""
+    _require_benchmark_extra()
     eval_log_path.parent.mkdir(parents=True, exist_ok=True)
     messages: list[Any] = [ChatMessageUser(content=prompt_text)]
 
@@ -1085,6 +1093,7 @@ async def run_all_process_judges(
     force: bool = True,
 ) -> dict[tuple[int, str], dict[str, Any]]:
     """Run the official PhDval-1 process judge (`judge_run_dir` / `run_process_judge`) concurrently across conditions."""
+    _require_benchmark_extra()
     sem = asyncio.Semaphore(5)
 
     async def _one(entry: dict[str, Any]) -> tuple[tuple[int, str], dict[str, Any]]:
@@ -1175,7 +1184,6 @@ def run_popper_falsification_and_past_logging(
 
         # Round 1: Evaluate faulty baseline / pre-repair candidates
         for spec in specs:
-            aid = str(spec["artifact_id"])
             fname = Path(spec["output_path"]).name
             cand_path = base_dir / fname
             if not cand_path.exists():
@@ -1252,7 +1260,6 @@ def run_popper_falsification_and_past_logging(
 
         # Round 2: Evaluate repaired POPPER-Swarm (Full) outputs
         for spec in specs:
-            aid = str(spec["artifact_id"])
             fname = Path(spec["output_path"]).name
             rep_path = full_dir / fname
 
@@ -1319,6 +1326,8 @@ def run_popper_falsification_and_past_logging(
         level="medium",
     )
 
+    round1_rejection_count = sum(1 for e in rejected_events if e["stage_label"].startswith("Round 1"))
+
     # Write outputs/popper_ledger.json
     ledger_path = outputs_dir / "popper_ledger.json"
     ledger_payload = {
@@ -1328,7 +1337,7 @@ def run_popper_falsification_and_past_logging(
         "rejection_threshold_e": round(1.0 / cfg.alpha_type1_error, 2),
         "calibration_formula": "e_k = 0.5 * (p_k ** -0.5)  [Vovk & Wang, 2021; Huang et al. POPPER, ICML 2025]",
         "total_evaluations": len(all_ledgers),
-        "total_round1_rejections_caught": len(rejected_events),
+        "total_round1_rejections_caught": round1_rejection_count,
         "total_round2_artifacts_accepted": len(accepted_events),
         "rejection_recovery_rate": round(len(accepted_events) / max(1, sum(len(t[4]) for t in task_configs)), 4),
         "ledgers": all_ledgers,
@@ -1346,7 +1355,7 @@ def run_popper_falsification_and_past_logging(
         "",
         f"- **Type-I Error Bound ($\\alpha$):** `{cfg.alpha_type1_error}` (Ville's inequality rejection threshold $E_t = \\prod_{{k=1}}^t e_k \\ge 1/\\alpha = {1.0/cfg.alpha_type1_error:.1f}$)",
         f"- **Total Sequential Artifact Evaluations:** `{len(all_ledgers)}`",
-        f"- **Round 1 Faulty Candidate Hypotheses Rejected ($E_t \\ge 20.0$):** `{len(rejected_events)}`",
+        f"- **Round 1 Faulty Candidate Hypotheses Rejected ($E_t \\ge 20.0$):** `{round1_rejection_count}`",
         f"- **Round 2 Repaired Swarm Artifacts Accepted ($E_t < 20.0$):** `{len(accepted_events)}`",
         f"- **Closed-Loop Self-Repair Recovery Rate:** `{ledger_payload['rejection_recovery_rate'] * 100:.1f}%`",
         "",
@@ -1419,6 +1428,7 @@ def run_benchmark_and_ablations(
     and `POPPER-Swarm (Full)`) on Task 9 and Task 11 (and Task 1 if requested), and write
     `outputs/benchmark_comparison.json`.
     """
+    _require_benchmark_extra()
     outputs_dir = REPO_ROOT / "outputs"
     outputs_dir.mkdir(parents=True, exist_ok=True)
     eval_runs_root = outputs_dir / "eval_runs"
@@ -1507,6 +1517,14 @@ def run_benchmark_and_ablations(
         judge_results = asyncio.run(run_all_process_judges(judge_queue, force=force_judge))
 
     # Build systems list and per-artifact breakdown for benchmark_comparison.json
+    r1_rej_count = int(ledger_payload["total_round1_rejections_caught"])
+    r2_rej_count = sum(
+        1
+        for e in ledger_payload["ledgers"]
+        if e["stage_label"].startswith("Round 2") and e["decision"] == "REJECTED"
+    )
+    r1_repaired_count = r1_rej_count - r2_rej_count
+
     failure_modes_by_cond: dict[str, list[str]] = {
         "single_agent_baseline": [
             "Retained GENCODE .version suffixes on DESeq2 DEG tables (row_f1 = 0.0 -> multiplicative collapse)",
@@ -1527,17 +1545,17 @@ def run_benchmark_and_ablations(
             "Critic lacks independent Exa biological marker priors (SNAP25, SYP, SYN1, Cyp2b10, Cyp1a1) for F6 contrast sign verification",
         ],
         "popper_swarm_full": [
-            f"All {ledger_payload['total_round1_rejections_caught']} faulty Round-1 candidate hypotheses caught by POPPER Critic (E_t >= 20.0) and repaired before final grading",
+            f"All {r1_rej_count} faulty Round-1 candidate hypotheses caught by POPPER Critic (E_t >= 20.0); "
+            f"{r1_repaired_count} repaired before final grading",
         ],
     }
 
-    r1_rej_count = int(ledger_payload["total_round1_rejections_caught"])
     rejections_meta: dict[str, tuple[int, int]] = {
         "single_agent_baseline": (0, 0),
         "ablation_no_critic": (0, 0),
         "ablation_no_past": (max(1, r1_rej_count - 3), max(1, r1_rej_count - 5)),
         "ablation_no_exa": (max(1, r1_rej_count - 2), max(1, r1_rej_count - 4)),
-        "popper_swarm_full": (r1_rej_count, r1_rej_count),
+        "popper_swarm_full": (r1_rej_count, r1_repaired_count),
     }
 
     systems_out: list[dict[str, Any]] = []
@@ -1628,7 +1646,6 @@ def run_benchmark_and_ablations(
     # Build per-artifact breakdown across all evaluated tasks
     artifact_breakdown: list[dict[str, Any]] = []
     for tnum, paper_id, _doi, _title, specs in task_defs:
-        spec_by_id = {str(s["artifact_id"]): s for s in specs}
         full_arts = {
             str(a["artifact_id"]): a
             for a in graded_results.get((tnum, "popper_swarm_full"), {}).get("artifacts", [])

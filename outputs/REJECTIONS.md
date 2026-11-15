@@ -6,7 +6,7 @@
 
 - **Type-I Error Bound ($\alpha$):** `0.05` (Ville's inequality rejection threshold $E_t = \prod_{k=1}^t e_k \ge 1/\alpha = 20.0$)
 - **Total Sequential Artifact Evaluations:** `32`
-- **Round 1 Faulty Candidate Hypotheses Rejected ($E_t \ge 20.0$):** `14`
+- **Round 1 Faulty Candidate Hypotheses Rejected ($E_t \ge 20.0$):** `13`
 - **Round 2 Repaired Swarm Artifacts Accepted ($E_t < 20.0$):** `18`
 - **Closed-Loop Self-Repair Recovery Rate:** `94.7%`
 

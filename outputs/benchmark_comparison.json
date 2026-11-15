@@ -137,7 +137,7 @@
       "task_9_phdval1": 0.845,
       "task_11_phdval1": 0.845,
       "rejections_caught": 13,
-      "rejections_repaired": 13,
+      "rejections_repaired": 12,
       "phdval1_rubrics": {
         "method_adherence": 3.0,
         "data_provenance": 4.0,
@@ -518,8 +518,8 @@
     "rejection_threshold_e": 20.0,
     "total_evaluations": 32,
     "total_round1_rejections_caught": 13,
-    "total_round2_artifacts_accepted": 19,
-    "rejection_recovery_rate": 1.0
+    "total_round2_artifacts_accepted": 18,
+    "rejection_recovery_rate": 0.9474
   },
   "task_1_supplementary_evaluation": {
     "task_number": 1,
