@@ -19,7 +19,9 @@ It combines **Exa Web Search**, **past.dev Multi-Agent Shared Memory**, and **se
 Reproducing a published computational biology paper from raw DNA/RNA sequencing files takes 30+ chained steps (`fasterq-dump`, barcode clipping, `HISAT2` alignment, `featureCounts`, `DESeq2`, `clusterProfiler`, `PIANO`).
 On **BixBench3**, single AI agents plateau around `0.5230` (and `0.1615` under matched single-run compute on raw FASTQ tasks) because each output table is graded by multiplying four accuracy checks together:
 
-$$\text{Artifact Score} = \text{Row\_F1} \times \text{Col\_F1} \times \text{CCC} \times \text{Label\_F1}$$
+```math
+\text{Artifact Score} = \text{Row\_F1} \times \text{Col\_F1} \times \text{CCC} \times \text{Label\_F1}
+```
 
 When a single agent gets the underlying biology math 99.9% right (`CCC = 0.9989`), but leaves an unstripped `.15` version suffix on Ensembl gene IDs (`ENSG00000142611.15` vs `ENSG00000142611`) or sorts `Clone D10` before `Control` alphabetically in R `DESeq2`, one factor hits `0.00` and zeroes out the entire table.
 
