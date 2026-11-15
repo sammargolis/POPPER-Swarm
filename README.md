@@ -96,8 +96,8 @@ conda activate popper_env
 For source code development and reproducing our BixBench3 benchmark results:
 
 ```bash
-git clone https://github.com/sammargolis/popper-swarm.git
-cd popper-swarm
+git clone https://github.com/sammargolis/POPPER-Swarm.git
+cd POPPER-Swarm
 pip install -r requirements.txt
 pip install -e .
 ```
